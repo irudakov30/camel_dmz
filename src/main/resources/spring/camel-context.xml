@@ -1,0 +1,35 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <!--<import resource="classpath:META-INF/cxf/cxf.xml" />-->
+    <!--<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />-->
+    <!--<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />-->
+
+    <cxf:cxfEndpoint id="routerEndpoint"
+                     address="http://localhost:9003/CamelContext/RouterPort"
+                     serviceClass="com.discover.Greeter">
+    </cxf:cxfEndpoint>
+
+    <!--<cxf:cxfEndpoint id="serviceEndpoint" address="http://localhost:9000/SoapContext/SoapPort"-->
+    <!--wsdlURL="testutils/hello_world.wsdl"-->
+    <!--serviceClass="org.apache.hello_world_soap_http.Greeter"-->
+    <!--endpointName="s:SoapPort"-->
+    <!--serviceName="s:SOAPService"-->
+    <!--xmlns:s="http://apache.org/hello_world_soap_http" />-->
+
+    <bean id="greeter" class="com.discover.GreeterImpl"/>
+
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <route>
+            <from uri="cxf:bean:routerEndpoint?dataFormat=POJO"/>
+            <to uri="bean:greeter?method=hello" pattern="InOut"/>
+            <setProperty propertyName="response">
+                <constant>Hello 123</constant>
+            </setProperty>
+        </route>
+    </camelContext>
+</beans>
